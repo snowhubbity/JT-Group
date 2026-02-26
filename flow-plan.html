@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Service Flow Plan</title>
+  <style>
+    :root{
+      --bg: #0b1220;
+      --panel: rgba(255,255,255,.06);
+      --panel2: rgba(255,255,255,.08);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.7);
+      --line: rgba(255,255,255,.14);
+      --shadow: 0 18px 50px rgba(0,0,0,.35);
+      --radius: 18px;
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans Thai", sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(900px 500px at 15% 10%, rgba(120,119,198,.35), transparent 60%),
+        radial-gradient(900px 500px at 85% 15%, rgba(56,189,248,.28), transparent 60%),
+        radial-gradient(900px 600px at 50% 100%, rgba(34,197,94,.18), transparent 60%),
+        var(--bg);
+      min-height:100vh;
+    }
+    .wrap{
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 44px 18px 80px;
+    }
+    .header{
+      display:flex; gap:18px; align-items:flex-start; justify-content:space-between; flex-wrap:wrap;
+      margin-bottom: 18px;
+    }
+    .title{
+      font-size: clamp(24px, 3vw, 34px);
+      margin:0;
+      letter-spacing:.2px;
+    }
+    .subtitle{
+      margin:10px 0 0;
+      color:var(--muted);
+      line-height:1.5;
+      max-width: 720px;
+    }
+    .pillbar{
+      display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+      margin-top: 6px;
+    }
+    .pill{
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      color: var(--muted);
+      user-select:none;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 18px;
+      margin-top: 22px;
+    }
+    @media (max-width: 900px){
+      .grid{ grid-template-columns: 1fr; }
+    }
+
+    .card{
+      border:1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.04));
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .cardHead{
+      padding: 18px 18px 14px;
+      border-bottom: 1px solid var(--line);
+      display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap;
+    }
+    .cardHead h2{
+      margin:0;
+      font-size: 18px;
+      letter-spacing:.2px;
+    }
+    .badge{
+      font-size: 12px;
+      color: rgba(255,255,255,.78);
+      background: rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.12);
+      padding: 6px 10px;
+      border-radius: 999px;
+    }
+    .content{ padding: 18px; }
+
+    /* Timeline */
+    .timeline{
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      position: relative;
+      padding-top: 6px;
+    }
+    .timeline:before{
+      content:"";
+      position:absolute;
+      top: 40px;
+      left: 8px;
+      right: 8px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.16), transparent);
+      pointer-events:none;
+    }
+    @media (max-width: 900px){
+      .timeline{
+        grid-template-columns: 1fr;
+      }
+      .timeline:before{ display:none; }
+    }
+    .step{
+      background: rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius: 16px;
+      padding: 14px 14px 16px;
+      position:relative;
+      transition: transform .18s ease, background .18s ease, border-color .18s ease;
+    }
+    .step:hover{
+      transform: translateY(-3px);
+      background: rgba(255,255,255,.07);
+      border-color: rgba(255,255,255,.18);
+    }
+    .num{
+      width: 34px; height: 34px;
+      border-radius: 999px;
+      display:grid; place-items:center;
+      font-weight: 700;
+      font-size: 13px;
+      border:1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.06);
+      margin-bottom: 10px;
+    }
+    .step h3{
+      margin: 0 0 6px;
+      font-size: 15px;
+    }
+    .step p{
+      margin:0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    /* Service list */
+    .klist{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .kitem{
+      display:flex; gap:12px; align-items:flex-start; justify-content:space-between;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      border-radius: 14px;
+      padding: 12px 12px;
+    }
+    .kleft{
+      display:flex; gap:10px; align-items:flex-start;
+      min-width: 0;
+    }
+    .dot{
+      width: 10px; height: 10px; border-radius: 999px;
+      margin-top: 6px;
+      background: rgba(255,255,255,.5);
+      flex: 0 0 auto;
+    }
+    .kitem strong{
+      display:block;
+      font-size: 14px;
+      margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 520px;
+    }
+    .kitem span{
+      display:block;
+      color: var(--muted);
+      font-size: 12.5px;
+      line-height: 1.4;
+    }
+    .rightMeta{
+      text-align:right;
+      flex: 0 0 auto;
+      color: rgba(255,255,255,.78);
+      font-size: 12px;
+    }
+
+    /* Accounting layout */
+    .cols{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    @media (max-width: 700px){
+      .cols{ grid-template-columns: 1fr; }
+    }
+    .mini{
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      border-radius: 16px;
+      padding: 14px;
+    }
+    .mini h3{
+      margin:0 0 10px;
+      font-size: 15px;
+    }
+    .tags{
+      display:flex; gap:8px; flex-wrap:wrap;
+      margin-bottom: 10px;
+    }
+    .tag{
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.05);
+      color: rgba(255,255,255,.78);
+    }
+    .miniFlow{
+      border-top:1px dashed rgba(255,255,255,.14);
+      padding-top: 10px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height:1.5;
+    }
+
+    /* Sidebar */
+    .side .content{ padding: 16px; }
+    details{
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      border-radius: 14px;
+      padding: 12px 12px;
+      margin-bottom: 10px;
+    }
+    summary{
+      cursor:pointer;
+      list-style:none;
+      font-weight: 600;
+      font-size: 14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    summary::-webkit-details-marker{ display:none; }
+    .sumHint{
+      font-size: 12px;
+      color: rgba(255,255,255,.65);
+      font-weight: 500;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      padding: 4px 8px;
+      border-radius: 999px;
+      flex: 0 0 auto;
+    }
+    .doclist{
+      margin: 10px 0 0;
+      padding-left: 18px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .footer{
+      margin-top: 22px;
+      color: rgba(255,255,255,.55);
+      font-size: 12px;
+      text-align:center;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="header">
+      <div>
+        <h1 class="title">Service Flow Plan</h1>
+        <p class="subtitle">
+          แผนภาพขั้นตอนบริการ (Flow) สำหรับหน้าเว็บ: <b>Company Register</b> และ <b>Accounting</b><br/>
+          โครงสร้างนี้เหมาะกับหน้า “Services” หรือ “How it works”
+        </p>
+        <div class="pillbar">
+          <div class="pill">Clean UI</div>
+          <div class="pill">Mobile Responsive</div>
+          <div class="pill">Open as a single HTML file</div>
+        </div>
+      </div>
+      <div class="pill">Updated: Company & Accounting</div>
+    </div>
+
+    <div class="grid">
+      <!-- Main column -->
+      <div>
+        <!-- Company Register -->
+        <section class="card">
+          <div class="cardHead">
+            <h2>Company Register</h2>
+            <div class="badge">Estimated time: 5 working days</div>
+          </div>
+          <div class="content">
+
+            <div class="timeline">
+              <div class="step">
+                <div class="num">01</div>
+                <h3>Select Service</h3>
+                <p>เลือกบริการที่ต้องการ: New Register / Update DBD / Various Change</p>
+              </div>
+              <div class="step">
+                <div class="num">02</div>
+                <h3>Submit Documents</h3>
+                <p>กรอกข้อมูลเบื้องต้นและอัปโหลดเอกสารที่เกี่ยวข้อง</p>
+              </div>
+              <div class="step">
+                <div class="num">03</div>
+                <h3>Review & Filing</h3>
+                <p>ทีมงานตรวจเอกสาร → ดำเนินการยื่น/แก้ไขกับหน่วยงาน (DBD)</p>
+              </div>
+              <div class="step">
+                <div class="num">04</div>
+                <h3>Completion</h3>
+                <p>แจ้งผลและส่งมอบเอกสาร/หนังสือรับรองให้ลูกค้า</p>
+              </div>
+            </div>
+
+            <div class="klist">
+              <div class="kitem">
+                <div class="kleft">
+                  <div class="dot"></div>
+                  <div>
+                    <strong>New Register</strong>
+                    <span>จดทะเบียนบริษัทใหม่ (เตรียมข้อมูลกรรมการ/ผู้ถือหุ้น/ทุนจดทะเบียน ฯลฯ)</span>
+                  </div>
+                </div>
+                <div class="rightMeta">Service</div>
+              </div>
+
+              <div class="kitem">
+                <div class="kleft">
+                  <div class="dot"></div>
+                  <div>
+                    <strong>Update Certification of Business Registration (DBD)</strong>
+                    <span>อัปเดต/ขอหนังสือรับรอง/เอกสารที่เกี่ยวข้องกับทะเบียนนิติบุคคล</span>
+                  </div>
+                </div>
+                <div class="rightMeta">Service</div>
+              </div>
+
+              <div class="kitem">
+                <div class="kleft">
+                  <div class="dot"></div>
+                  <div>
+                    <strong>Register Various Change</strong>
+                    <span>จดทะเบียนเปลี่ยนแปลง (เช่น ที่อยู่, กรรมการ, วัตถุประสงค์, ทุน ฯลฯ)</span>
+                  </div>
+                </div>
+                <div class="rightMeta">Service</div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- Accounting -->
+        <section class="card" style="margin-top:18px;">
+          <div class="cardHead">
+            <h2>Accounting</h2>
+            <div class="badge">Monthly / Yearly services</div>
+          </div>
+          <div class="content">
+            <div class="cols">
+              <div class="mini">
+                <h3>Monthly Service</h3>
+                <div class="tags">
+                  <span class="tag">VAT</span>
+                  <span class="tag">PND1</span>
+                  <span class="tag">SSO</span>
+                </div>
+                <div class="miniFlow">
+                  <b>Flow:</b> ส่งเอกสารรายเดือน → บันทึกบัญชี/คำนวณภาษี → ยื่นแบบ → สรุปรายงานให้ลูกค้า
+                </div>
+              </div>
+
+              <div class="mini">
+                <h3>Yearly Service</h3>
+                <div class="tags">
+                  <span class="tag">Year-end Closing</span>
+                  <span class="tag">Auditing</span>
+                </div>
+                <div class="miniFlow">
+                  <b>Flow:</b> รวบรวมข้อมูลทั้งปี → ปิดงบ/จัดทำงบการเงิน → ตรวจสอบ (Audit) → ยื่นงบ/ปิดปี
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Sidebar -->
+      <aside class="card side">
+        <div class="cardHead">
+          <h2>Documents & Notes</h2>
+          <div class="badge">Checklist</div>
+        </div>
+        <div class="content">
+          <details open>
+            <summary>
+              Company Register
+              <span class="sumHint">documents</span>
+            </summary>
+            <ul class="doclist">
+              <li>ข้อมูลผู้ถือหุ้น / กรรมการ</li>
+              <li>ที่อยู่บริษัท</li>
+              <li>สำเนาบัตร/พาสปอร์ต (ตามกรณี)</li>
+              <li>เอกสารประกอบการเปลี่ยนแปลง (ถ้ามี)</li>
+            </ul>
+          </details>
+
+          <details>
+            <summary>
+              Accounting (Monthly)
+              <span class="sumHint">VAT / PND1 / SSO</span>
+            </summary>
+            <ul class="doclist">
+              <li>เอกสารรายรับ/รายจ่ายประจำเดือน</li>
+              <li>ใบกำกับภาษีซื้อ/ขาย (ถ้ามี VAT)</li>
+              <li>ข้อมูลเงินเดือนพนักงาน (PND1/SSO)</li>
+            </ul>
+          </details>
+
+          <details>
+            <summary>
+              Accounting (Yearly)
+              <span class="sumHint">closing / audit</span>
+            </summary>
+            <ul class="doclist">
+              <li>งบทดลอง/บัญชีแยกประเภท</li>
+              <li>สรุปทรัพย์สิน/หนี้สิน</li>
+              <li>เอกสารประกอบการปิดงบ & ตรวจสอบ</li>
+            </ul>
+          </details>
+
+          <div class="footer">
+            Tip: คุณสามารถนำ HTML นี้ไปวางบน Hosting หรือใช้เป็น Template ใน Django/React ได้
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</body>
+</html>
